@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>learn · page scaffold (part 3/3 · advanced patterns)</title>
+    <!-- part 3: carousel, toast, progress bar, dark mode toggle, sortable table (frequently needed) -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        /* light theme defaults (will be toggled) */
+        body {
+            background: #f8fafc;
+            color: #0f172a;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.2s;
+        }
+
+        /* dark mode class (frequently needed) */
+        body.dark {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        body.dark .page-header,
+        body.dark .card,
+        body.dark .tabs,
+        body.dark .tab-pane,
+        body.dark .tab-headers,
+        body.dark .accordion,
+        body.dark .accordion-header,
+        body.dark .table-container,
+        body.dark .toast,
+        body.dark .modal-content {
+            background: #1e293b;
+            color: #f1f5f9;
+            border-color: #334155;
+        }
+
+        body.dark .tab-btn {
+            background: #1e293b;
+            color: #94a3b8;
+        }
+
+        body.dark .tab-btn.active {
+            background: #334155;
+            color: #fff;
+        }
+
+        /* header / logo / nav (same as before) */
+        .page-header {
+            background: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            padding: 0.75rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 500;
+            color: #334155;
+            transition: color 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+
+        body.dark .nav-links a {
+            color: #cbd5e1;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            width: 100%;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 2.5rem 0 1.5rem;
+            border-left: 8px solid #2563eb;
+            padding-left: 1.5rem;
+        }
+
+        /* ----- PART 3 SPECIFIC PATTERNS ----- */
+
+        /* 1) CAROUSEL (basic image slider with prev/next) */
+        .carousel-container {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            margin-bottom: 2.5rem;
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 260px;
+            overflow: hidden;
+            border-radius: 1rem;
+            background: #cbd5e1;
+        }
+
+        .carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.7);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 5;
+            backdrop-filter: blur(4px);
+        }
+
+        .carousel-prev { left: 16px; }
+        .carousel-next { right: 16px; }
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: #cbd5e1;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background: #2563eb;
+        }
+
+        /* 2) TOAST NOTIFICATION (temporary message) */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            border-left: 5px solid #2563eb;
+            font-weight: 500;
+        }
+
+        body.dark .toast {
+            background: #1e293b;
+            border-left-color: #7c3aed;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        /* 3) PROGRESS BAR (animated) */
+        .progress-section {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar-bg {
+            background: #e2e8f0;
+            height: 24px;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+            border-radius: 9999px;
+            transition: width 0.5s ease;
+        }
+
+        /* 4) SORTABLE TABLE (frequently needed) */
+        .table-container {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f1f5f9;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            cursor: pointer;
+            position: relative;
+        }
+
+        body.dark th {
+            background: #334155;
+        }
+
+        th:hover {
+            background: #e2e8f0;
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .sort-indicator {
+            margin-left: 6px;
+            opacity: 0.5;
+        }
+
+        /* 5) DARK MODE TOGGLE switch */
+        .theme-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 1rem;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #94a3b8;
+            border-radius: 34px;
+            transition: 0.2s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "🌙";
+            height: 22px;
+            width: 22px;
+            left: 2px;
+            bottom: 2px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        input:checked + .slider {
+            background: #2563eb;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+            content: "☀️";
+        }
+
+        /* responsive */
+        @media (max-width: 640px) {
+            .page-header { padding: 0.75rem 1rem; }
+            .nav-links { display: none; width: 100%; flex-direction: column; }
+            .nav-links.show { display: flex; }
+            .menu-toggle { display: block; }
+        }
+    </style>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+    <header class="page-header">
+        <div class="logo">✨ devLearn</div>
+        <button class="menu-toggle" id="menuToggle">☰ Menu</button>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#">home</a></li>
+            <li><a href="#">patterns</a></li>
+            <li><a href="#">carousel</a></li>
+            <li><a href="#">table</a></li>
+            <li><a href="#">contact</a></li>
+        </ul>
+        <!-- dark mode toggle (frequently needed) -->
+        <div class="theme-switch">
+            <span>🌓</span>
+            <label class="switch">
+                <input type="checkbox" id="darkModeToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1 class="section-title" style="margin-top:0;">part 3: advanced patterns</h1>
+        <p>carousel, toast, progress bar, sortable table, dark mode — all with jQuery</p>
+
+        <!-- CAROUSEL section -->
+        <div class="carousel-container">
+            <h2 style="margin-bottom:1rem;">🖼️ image carousel</h2>
+            <div class="carousel">
+                <img class="carousel-slide active" src="https://picsum.photos/id/1015/800/300" alt="landscape">
+                <img class="carousel-slide" src="https://picsum.photos/id/1043/800/300" alt="nature">
+                <img class="carousel-slide" src="https://picsum.photos/id/106/800/300" alt="flowers">
+                <button class="carousel-btn carousel-prev">‹</button>
+                <button class="carousel-btn carousel-next">›</button>
+            </div>
+            <div class="carousel-dots">
+                <span class="dot active" data-index="0"></span>
+                <span class="dot" data-index="1"></span>
+                <span class="dot" data-index="2"></span>
+            </div>
+        </div>
+
+        <!-- TOAST + PROGRESS row (flex) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem;">
+            <!-- toast trigger -->
+            <div style="background: white; border-radius: 1.5rem; padding: 2rem;">
+                <h3>🍞 toast notifications</h3>
+                <button class="btn-primary" id="showToast" style="padding:0.75rem 1.5rem; border:none; border-radius:9999px; background:#2563eb; color:white; font-weight:600; cursor:pointer;">show success toast</button>
+                <button class="btn-outline" id="showErrorToast" style="margin-left:0.5rem; padding:0.75rem 1.5rem; border:2px solid #dc2626; background:transparent; border-radius:9999px; cursor:pointer;">error toast</button>
+            </div>
+
+            <!-- progress bar demo -->
+            <div class="progress-section">
+                <h3>📊 progress (jQuery animate)</h3>
+                <div class="progress-label">
+                    <span>loading simulation</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+                </div>
+                <button id="startProgress" style="margin-top:1rem; padding:0.5rem 1.5rem;">run 0→100%</button>
+                <button id="resetProgress">reset</button>
+            </div>
+        </div>
+
+        <!-- SORTABLE TABLE -->
+        <div class="table-container">
+            <h3 style="margin-bottom:1rem;">📋 sortable table (click headers)</h3>
+            <table id="sortableTable">
+                <thead>
+                    <tr>
+                        <th data-sort="name">Framework <span class="sort-indicator">↕️</span></th>
+                        <th data-sort="stars">⭐ stars <span class="sort-indicator">↕️</span></th>
+                        <th data-sort="released">📅 released <span class="sort-indicator">↕️</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>React</td><td>215</td><td>2013</td></tr>
+                    <tr><td>Vue</td><td>185</td><td>2014</td></tr>
+                    <tr><td>Svelte</td><td>95</td><td>2016</td></tr>
+                    <tr><td>Angular</td><td>168</td><td>2010</td></tr>
+                    <tr><td>Alpine</td><td>42</td><td>2019</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- part 3 reminder -->
+        <div style="background: #f1f5f9; border-radius: 2rem; padding: 2rem; border: 2px solid #2563eb; text-align:center;">
+            <p style="font-size:1.3rem;">✨ part 3 complete — all three parts ready. you can now combine, extend, or deploy.</p>
+        </div>
+    </main>
+
+    <!-- toast container (fixed) -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <footer class="page-footer">
+        <p>© part 3 · carousel · toast · progress · sortable table · dark mode</p>
+    </footer>
+
+    <script>
+        $(document).ready(function(){
+
+            // ---------- DARK MODE ----------
+            $('#darkModeToggle').on('change', function() {
+                $('body').toggleClass('dark');
+            });
+
+            // ---------- MOBILE MENU ----------
+            $('#menuToggle').on('click', function() {
+                $('#navLinks').toggleClass('show');
+            });
+            $(window).on('resize', function() {
+                if ($(window).width() > 640) $('#navLinks').removeClass('show');
+            });
+
+            // ---------- CAROUSEL ----------
+            let currentSlide = 0;
+            const slides = $('.carousel-slide');
+            const dots = $('.dot');
+            const totalSlides = slides.length;
+
+            function showSlide(index) {
+                if (index < 0) index = totalSlides - 1;
+                if (index >= totalSlides) index = 0;
+                slides.removeClass('active').eq(index).addClass('active');
+                dots.removeClass('active').eq(index).addClass('active');
+                currentSlide = index;
+            }
+
+            $('.carousel-prev').click(function() { showSlide(currentSlide - 1); });
+            $('.carousel-next').click(function() { showSlide(currentSlide + 1); });
+            dots.each(function(i) {
+                $(this).click(function() { showSlide(i); });
+            });
+
+            // auto slide (frequently needed)
+            let interval = setInterval(() => showSlide(currentSlide + 1), 4000);
+            $('.carousel-container').hover(
+                () => clearInterval(interval),
+                () => interval = setInterval(() => showSlide(currentSlide + 1), 4000)
+            );
+
+            // ---------- TOAST ----------
+            function createToast(message, type = 'success') {
+                const toast = $('<div class="toast"></div>').text(message);
+                if (type === 'error') toast.css('border-left-color', '#dc2626');
+                const closeBtn = $('<button class="toast-close">×</button>');
+                closeBtn.click(function() { $(this).parent().fadeOut(300, function() { $(this).remove(); }); });
+                toast.append(closeBtn);
+                $('#toastContainer').append(toast);
+                setTimeout(() => toast.fadeOut(300, function() { $(this).remove(); }), 3500);
+            }
+
+            $('#showToast').click(() => createToast('✓ operation successful', 'success'));
+            $('#showErrorToast').click(() => createToast('✗ something went wrong', 'error'));
+
+            // ---------- PROGRESS BAR ----------
+            $('#startProgress').click(function() {
+                let width = 0;
+                const interval = setInterval(function() {
+                    if (width >= 100) clearInterval(interval);
+                    else { width += 2; $('#progressFill').css('width', width + '%'); $('#progressPercent').text(width + '%'); }
+                }, 30);
+            });
+            $('#resetProgress').click(function() {
+                $('#progressFill').css('width', '0%'); $('#progressPercent').text('0%');
+            });
+
+            // ---------- SORTABLE TABLE ----------
+            let sortDirection = { name: 'asc', stars: 'asc', released: 'asc' };
+            $('#sortableTable th').click(function() {
+                const col = $(this).data('sort');
+                const tbody = $('#sortableTable tbody');
+                const rows = tbody.find('tr').toArray();
+
+                // determine index
+                const colIndex = $(this).index();
+
+                rows.sort(function(a, b) {
+                    let aVal = $(a).find('td').eq(colIndex).text();
+                    let bVal = $(b).find('td').eq(colIndex).text();
+
+                    if (col === 'stars' || col === 'released') {
+                        aVal = parseInt(aVal, 10);
+                        bVal = parseInt(bVal, 10);
+                    } else {
+                        aVal = aVal.toLowerCase();
+                        bVal = bVal.toLowerCase();
+                    }
+
+                    if (sortDirection[col] === 'asc') {
+                        return aVal > bVal ? 1 : -1;
+                    } else {
+                        return aVal < bVal ? 1 : -1;
+                    }
+                });
+
+                sortDirection[col] = sortDirection[col] === 'asc' ? 'desc' : 'asc';
+                tbody.empty().append(rows);
+
+                // update indicator (simple)
+                $('#sortableTable th span').text('↕️');
+                $(this).find('span').text(sortDirection[col] === 'asc' ? '⬆️' : '⬇️');
+            });
+
+        });
+    </script>
+</body>
+</html>

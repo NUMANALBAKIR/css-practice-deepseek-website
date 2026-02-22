@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>learn · page scaffold (part 1/3)</title>
+    <!-- common reset + frequently needed css patterns: flex, grid, cards, hover, sticky header, etc. -->
+    <link rel="stylesheet" href="part-1.css">
+
+    <!-- jquery (slim) from CDN -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <!-- STICKY HEADER with flex + toggler (jQuery used for mobile toggle) -->
+    <header class="page-header">
+        <div class="logo">✨ devLearn</div>
+        <button class="menu-toggle" id="menuToggle">☰ Menu</button>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#">home</a></li>
+            <li><a href="#">courses</a></li>
+            <li><a href="#">sandbox</a></li>
+            <li><a href="#">cheatsheet</a></li>
+            <li><a href="#">contact</a></li>
+        </ul>
+    </header>
+
+    <main class="container">
+        <!-- HERO section — frequently used -->
+        <section class="hero">
+            <h1>CSS from real pages</h1>
+            <p>Build components using flex, grid, cards, sticky headers, and interactive jQuery — part 1 of a multi‑step page.</p>
+            <div class="cta-group">
+                <a href="#" class="btn btn-primary">start learning</a>
+                <a href="#" class="btn btn-outline">view parts →</a>
+            </div>
+        </section>
+
+        <!-- FEATURES grid — frequently needed layout -->
+        <h2 class="section-title">commonly used patterns</h2>
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-icon">📐</div>
+                <h3>flex & grid</h3>
+                <p>repeat(auto-fit, minmax(…)) + flex nav. The two layout workhorses.</p>
+                <span class="badge">core</span>
+            </div>
+            <div class="card">
+                <div class="card-icon">🧩</div>
+                <h3>cards & hover</h3>
+                <p>subtle lift, border, shadow transitions. Used everywhere.</p>
+                <span class="badge">interaction</span>
+            </div>
+            <div class="card">
+                <div class="card-icon">📌</div>
+                <h3>sticky header</h3>
+                <p>position: sticky; top:0; with box shadow and z-index.</p>
+                <span class="badge">utility</span>
+            </div>
+            <div class="card">
+                <div class="card-icon">🎨</div>
+                <h3>gradient text</h3>
+                <p>background-clip: text; keeps modern, vibrant look.</p>
+                <span class="badge">design</span>
+            </div>
+            <div class="card">
+                <div class="card-icon">📱</div>
+                <h3>responsive toggle</h3>
+                <p>mobile menu with jQuery .click() / .toggleClass() — see below.</p>
+                <span class="badge">jQuery</span>
+            </div>
+            <div class="card">
+                <div class="card-icon">⚡</div>
+                <h3>counters</h3>
+                <p>simple jQuery interactivity: increment/decrement (frequently needed demo).</p>
+                <span class="badge">dynamic</span>
+            </div>
+        </div>
+
+        <!-- INTERACTIVE DEMO (jQuery) — frequently needed pattern: counter / event handling -->
+        <div class="interactive-demo">
+            <div class="counter-box">
+                <span class="badge" style="background:#2563eb; color:white;">live jQuery</span>
+                <div class="counter-value" id="clickCounter">0</div>
+                <p style="color:#334155;">clicks simulated</p>
+            </div>
+            <div class="btn-group">
+                <button class="btn-small" id="decrementBtn">−1</button>
+                <button class="btn-small" id="incrementBtn">+1</button>
+                <button class="btn-small" id="resetBtn">⟲ reset</button>
+            </div>
+            <p style="flex:1; min-width:200px;"><small>jQuery handles increment/decrement/reset. Also mobile toggle (top right).</small></p>
+        </div>
+
+        <!-- extra info: part 1 hint -->
+        <div style="background: #f1f5f9; border-radius: 2rem; padding: 2rem; margin-top: 2rem; border: 2px dashed #94a3b8;">
+            <p style="font-size: 1.2rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;"><span>🧩</span> part 1 — header, hero, grid, card, jquery counter. Ready for next section (you’ll provide instructions).</p>
+        </div>
+    </main>
+
+    <footer class="page-footer">
+        <p>© part 1 · common css patterns · preview ready on deepseek</p>
+    </footer>
+
+    <!-- JQUERY SCRIPTS: frequently needed interactions -->
+    <script>
+        $(document).ready(function(){
+
+            // 1) mobile menu toggle (frequently used pattern)
+            $('#menuToggle').on('click', function() {
+                $('#navLinks').toggleClass('show');
+            });
+
+            // 2) counter demo (increment / decrement / reset)
+            let count = 0;
+            const $counter = $('#clickCounter');
+
+            function updateCounter(val) {
+                count = val;
+                $counter.text(count);
+            }
+
+            $('#incrementBtn').on('click', function() {
+                updateCounter(count + 1);
+            });
+
+            $('#decrementBtn').on('click', function() {
+                updateCounter(count - 1);
+            });
+
+            $('#resetBtn').on('click', function() {
+                updateCounter(0);
+            });
+
+            // 3) optional: close mobile menu if window resized above 640px (good ux)
+            $(window).on('resize', function() {
+                if ($(window).width() > 640) {
+                    $('#navLinks').removeClass('show');
+                }
+            });
+
+            // 4) small hover effect on cards via jquery (just to show we can)
+            //    but we keep css :hover — this is extra.
+            $('.card').on('mouseenter', function() {
+                $(this).css('border-color', '#2563eb');
+            }).on('mouseleave', function() {
+                $(this).css('border-color', '#e2e8f0');
+            });
+
+        });
+    </script>
+
+    <!-- brief note: frequently needed css styles are present:
+         - sticky header
+         - flex nav + mobile toggle
+         - grid (auto-fit)
+         - cards with shadow/transition
+         - buttons with gradient / hover
+         - container max-width
+         - background clip text
+         - jquery for toggling and simple counter
+    -->
+</body>
+</html>

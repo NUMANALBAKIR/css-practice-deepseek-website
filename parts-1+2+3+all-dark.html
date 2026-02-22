@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>learn · complete page · parts 1+2+3 (dark mode ready)</title>
+    <!-- consolidated styles: parts 1,2,3 + dark mode for every component -->
+    <style>
+        /* ----- RESET & BASE (part1) ----- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: #f8fafc;
+            color: #0f172a;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.2s ease;
+        }
+
+        /* ----- DARK MODE (global overrides, works for all sections) ----- */
+        body.dark {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        body.dark .page-header,
+        body.dark .card,
+        body.dark .tabs,
+        body.dark .tab-pane,
+        body.dark .tab-headers,
+        body.dark .accordion,
+        body.dark .accordion-header,
+        body.dark .table-container,
+        body.dark .toast,
+        body.dark .carousel-container,
+        body.dark .progress-section,
+        body.dark .interactive-demo,
+        body.dark .tooltip-demo,
+        body.dark .modal,
+        body.dark .counter-box {
+            background: #1e293b;
+            color: #f1f5f9;
+            border-color: #334155;
+        }
+
+        body.dark .tab-btn {
+            background: #1e293b;
+            color: #94a3b8;
+        }
+
+        body.dark .tab-btn.active {
+            background: #334155;
+            color: #fff;
+        }
+
+        body.dark .nav-links a {
+            color: #cbd5e1;
+        }
+
+        body.dark .btn-outline {
+            border-color: #3b82f6;
+            color: #90b4f5;
+        }
+
+        body.dark th {
+            background: #334155;
+        }
+
+        body.dark .badge {
+            background: #475569;
+            color: #f1f5f9;
+        }
+
+        /* ----- STICKY HEADER (part1) ----- */
+        .page-header {
+            background: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            padding: 0.75rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 500;
+            color: #334155;
+            transition: color 0.2s;
+            padding-bottom: 4px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        /* dark mode toggle switch (from part3) */
+        .theme-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 1rem;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #94a3b8;
+            border-radius: 34px;
+            transition: 0.2s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "🌙";
+            height: 22px;
+            width: 22px;
+            left: 2px;
+            bottom: 2px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        input:checked + .slider {
+            background: #2563eb;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+            content: "☀️";
+        }
+
+        /* ----- container / layout ----- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            width: 100%;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 2.5rem 0 1.5rem;
+            border-left: 8px solid #2563eb;
+            padding-left: 1.5rem;
+        }
+
+        /* ----- HERO (part1) ----- */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 3rem 1rem;
+            background: linear-gradient(to bottom, #ffffff, #f1f5f9);
+            border-radius: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        body.dark .hero {
+            background: #1e293b;
+            background-image: linear-gradient(to bottom, #1e293b, #0f172a);
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 800;
+            background: linear-gradient(to right, #0f172a, #2563eb);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+        .hero p {
+            font-size: 1.25rem;
+            color: #475569;
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+        body.dark .hero p {
+            color: #cbd5e1;
+        }
+
+        .cta-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 4px 6px -2px #2563eb80;
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        .btn-outline {
+            background: transparent;
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        /* ----- FEATURE GRID (part1) ----- */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 1.5rem 0 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem 1.2rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+        .card-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+
+        .badge {
+            background: #e2e8f0;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            display: inline-block;
+        }
+
+        /* ----- TABS (part2) ----- */
+        .tabs {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            overflow: hidden;
+            margin-bottom: 2.5rem;
+        }
+        .tab-headers {
+            display: flex;
+            border-bottom: 2px solid #e2e8f0;
+            background: #f9f9fb;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            background: transparent;
+            border: none;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+            background: white;
+        }
+        .tab-pane { display: none; padding: 2rem 1.5rem; }
+        .tab-pane.active { display: block; }
+        pre {
+            background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 0.75rem;
+            overflow-x: auto; font-family: monospace;
+        }
+
+        /* ----- ACCORDION (part2) ----- */
+        .accordion {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin-bottom: 2.5rem;
+        }
+        .accordion-item { border-bottom: 1px solid #e2e8f0; }
+        .accordion-item:last-child { border-bottom: none; }
+        .accordion-header {
+            width: 100%; background: white; padding: 1.25rem 1.5rem;
+            text-align: left; font-weight: 600; border: none;
+            display: flex; justify-content: space-between; cursor: pointer;
+        }
+        .accordion-header .arrow { transition: transform 0.3s; }
+        .accordion-header.active .arrow { transform: rotate(90deg); }
+        .accordion-content { display: none; padding: 0 1.5rem 1.5rem; }
+
+        /* ----- MODAL (part2) ----- */
+        .modal-overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(15,23,42,0.6); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .modal {
+            background: white; max-width: 500px; width: 90%; border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+        }
+        .modal-header { padding: 1.5rem 1.5rem 0.5rem; display: flex; justify-content: space-between; }
+        .modal-close { background: none; border: none; font-size: 1.8rem; cursor: pointer; }
+        .modal-body { padding: 0.5rem 1.5rem 1.5rem; }
+        .modal-footer { padding: 1rem 1.5rem 1.5rem; display: flex; gap: 0.75rem; justify-content: flex-end; }
+        .btn-modal { padding: 0.5rem 1.5rem; border-radius: 9999px; border: none; cursor: pointer; }
+        .btn-secondary { background: #e2e8f0; }
+
+        /* ----- TOOLTIP (part2) ----- */
+        .tooltip-demo {
+            background: #dbeafe; padding: 1rem 1.5rem; border-radius: 1rem;
+            margin: 1rem 0 2rem; display: inline-block;
+        }
+        [data-tooltip] {
+            position: relative; cursor: help; border-bottom: 1px dashed #2563eb;
+        }
+        [data-tooltip]:before {
+            content: attr(data-tooltip); position: absolute; bottom: 150%; left: 50%;
+            transform: translateX(-50%); background: #0f172a; color: white;
+            padding: 0.3rem 0.8rem; border-radius: 0.375rem; font-size: 0.85rem;
+            white-space: nowrap; display: none; z-index: 20;
+        }
+        [data-tooltip]:hover:before { display: block; }
+
+        /* ----- CAROUSEL (part3) ----- */
+        .carousel-container {
+            background: white; border-radius: 1.5rem; padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); margin-bottom: 2.5rem;
+        }
+        .carousel {
+            position: relative; width: 100%; height: 260px; overflow: hidden;
+            border-radius: 1rem; background: #cbd5e1;
+        }
+        .carousel-slide {
+            position: absolute; width: 100%; height: 100%; object-fit: cover;
+            opacity: 0; transition: opacity 0.4s;
+        }
+        .carousel-slide.active { opacity: 1; }
+        .carousel-btn {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.7); border: none; width: 40px; height: 40px;
+            border-radius: 50%; font-size: 1.5rem; cursor: pointer; z-index: 5;
+        }
+        .carousel-prev { left: 16px; }
+        .carousel-next { right: 16px; }
+        .carousel-dots { display: flex; gap: 10px; justify-content: center; margin-top: 1rem; }
+        .dot { width: 12px; height: 12px; background: #cbd5e1; border-radius: 50%; cursor: pointer; }
+        .dot.active { background: #2563eb; }
+
+        /* ----- TOAST (part3) ----- */
+        .toast-container {
+            position: fixed; bottom: 24px; right: 24px; z-index: 999;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        .toast {
+            background: white; padding: 1rem 1.5rem; border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+            display: flex; align-items: center; gap: 12px;
+            animation: slideIn 0.3s; border-left: 5px solid #2563eb;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .toast-close { background: none; border: none; font-size: 1.3rem; cursor: pointer; }
+
+        /* ----- PROGRESS (part3) ----- */
+        .progress-section {
+            background: white; border-radius: 1.5rem; padding: 2rem; margin-bottom: 2.5rem;
+        }
+        .progress-bar-bg {
+            background: #e2e8f0; height: 24px; border-radius: 9999px; overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%; width: 0%; background: linear-gradient(90deg, #2563eb, #7c3aed);
+            border-radius: 9999px; transition: width 0.5s;
+        }
+
+        /* ----- SORTABLE TABLE (part3) ----- */
+        .table-container {
+            background: white; border-radius: 1rem; padding: 1.5rem;
+            overflow-x: auto; margin: 2rem 0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: #f1f5f9; padding: 0.75rem 1rem; text-align: left; cursor: pointer;
+        }
+        td { padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; }
+
+        /* ----- INTERACTIVE DEMO counter (part1) ----- */
+        .interactive-demo {
+            background: #dbeafe; border-radius: 1rem; padding: 2rem;
+            margin: 3rem 0; display: flex; flex-wrap: wrap; align-items: center;
+            justify-content: space-between; gap: 1.5rem;
+        }
+        .counter-box {
+            background: white; padding: 1.5rem 2.5rem; border-radius: 1rem;
+        }
+        .counter-value { font-size: 3rem; font-weight: 700; color: #1e3a8a; }
+        .btn-group { display: flex; gap: 0.75rem; }
+        .btn-small {
+            padding: 0.5rem 1.25rem; font-size: 1.2rem; border: none;
+            background: white; border-radius: 9999px; cursor: pointer;
+            border: 1px solid #94a3b8;
+        }
+
+        /* misc */
+        .page-footer {
+            background: white; padding: 1.5rem; text-align: center;
+            border-top: 1px solid #e2e8f0; margin-top: auto;
+        }
+        body.dark .page-footer { background: #1e293b; }
+
+        @media (max-width: 640px) {
+            .page-header { padding: 0.75rem 1rem; }
+            .nav-links { display: none; width: 100%; flex-direction: column; align-items: center; }
+            .nav-links.show { display: flex; }
+            .menu-toggle { display: block; }
+        }
+    </style>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <!-- STICKY HEADER with dark mode toggle (combined) -->
+    <header class="page-header">
+        <div class="logo">✨ devLearn</div>
+        <button class="menu-toggle" id="menuToggle">☰ Menu</button>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#">home</a></li>
+            <li><a href="#">courses</a></li>
+            <li><a href="#">patterns</a></li>
+            <li><a href="#">sandbox</a></li>
+            <li><a href="#">contact</a></li>
+        </ul>
+        <div class="theme-switch">
+            <span>🌓</span>
+            <label class="switch">
+                <input type="checkbox" id="darkModeToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- HERO (part1) -->
+        <section class="hero">
+            <h1>CSS from real pages</h1>
+            <p>All patterns combined: sticky header, flex, grid, cards, tabs, accordion, modal, carousel, toast, progress, sortable table, dark mode.</p>
+            <div class="cta-group">
+                <a href="#" class="btn btn-primary">start learning</a>
+                <a href="#" class="btn btn-outline">explore parts</a>
+            </div>
+        </section>
+
+        <!-- FEATURE GRID (part1) -->
+        <h2 class="section-title">commonly used patterns</h2>
+        <div class="grid-3">
+            <div class="card"><div class="card-icon">📐</div><h3>flex & grid</h3><p>repeat(auto-fit, minmax) + flex nav.</p><span class="badge">core</span></div>
+            <div class="card"><div class="card-icon">🧩</div><h3>cards & hover</h3><p>lift, shadow, transitions.</p><span class="badge">interaction</span></div>
+            <div class="card"><div class="card-icon">📌</div><h3>sticky header</h3><p>position: sticky; top:0.</p><span class="badge">utility</span></div>
+            <div class="card"><div class="card-icon">🎨</div><h3>gradient text</h3><p>background-clip: text.</p><span class="badge">design</span></div>
+            <div class="card"><div class="card-icon">📱</div><h3>responsive toggle</h3><p>mobile menu with jQuery.</p><span class="badge">jQuery</span></div>
+            <div class="card"><div class="card-icon">⚡</div><h3>counter</h3><p>increment/decrement demo.</p><span class="badge">dynamic</span></div>
+        </div>
+
+        <!-- TABS (part2) -->
+        <div class="tabs">
+            <div class="tab-headers">
+                <button class="tab-btn active" id="tab1Btn">HTML</button>
+                <button class="tab-btn" id="tab2Btn">CSS</button>
+                <button class="tab-btn" id="tab3Btn">jQuery</button>
+            </div>
+            <div class="tab-pane active" id="tab1"><h3>HTML structure</h3><p>Semantic header/main/footer</p><pre>&lt;header&gt;...&lt;/header&gt;</pre></div>
+            <div class="tab-pane" id="tab2"><h3>CSS building blocks</h3><p>Grid, card hover, sticky, tabs, accordion.</p></div>
+            <div class="tab-pane" id="tab3"><h3>jQuery interactions</h3><p>Toggle tabs, accordion, modal, carousel, sort.</p></div>
+        </div>
+
+        <!-- ACCORDION (part2) -->
+        <h2 class="section-title">common questions</h2>
+        <div class="accordion">
+            <div class="accordion-item"><button class="accordion-header">What is flex? <span class="arrow">▶</span></button><div class="accordion-content"><p>Space-between, wrapping, alignment.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header">How to make sticky footer? <span class="arrow">▶</span></button><div class="accordion-content"><p>min-height:100vh; flex-direction: column; margin-top:auto on footer.</p></div></div>
+            <div class="accordion-item"><button class="accordion-header">Dark mode works? <span class="arrow">▶</span></button><div class="accordion-content"><p>Yes, toggle on top right changes every component.</p></div></div>
+        </div>
+
+        <!-- TOOLTIP (part2) + MODAL trigger -->
+        <div class="tooltip-demo">
+            <span class="badge">tooltip</span> <span data-tooltip="I'm a tooltip">hover for hint</span>
+            <button id="openModal" class="btn-primary" style="margin-left:1.5rem; border:none; padding:0.5rem 1.5rem; border-radius:9999px;">✨ open modal</button>
+        </div>
+
+        <!-- CAROUSEL (part3) -->
+        <div class="carousel-container">
+            <h3>🖼️ carousel</h3>
+            <div class="carousel">
+                <img class="carousel-slide active" src="https://picsum.photos/id/1015/800/300" alt="landscape">
+                <img class="carousel-slide" src="https://picsum.photos/id/1043/800/300" alt="nature">
+                <img class="carousel-slide" src="https://picsum.photos/id/106/800/300" alt="flowers">
+                <button class="carousel-btn carousel-prev">‹</button>
+                <button class="carousel-btn carousel-next">›</button>
+            </div>
+            <div class="carousel-dots"><span class="dot active" data-index="0"></span><span class="dot" data-index="1"></span><span class="dot" data-index="2"></span></div>
+        </div>
+
+        <!-- PROGRESS + TOAST (row) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+            <div style="background: white; border-radius: 1.5rem; padding: 2rem;" class=" toast-section">
+                <h3>🍞 toast</h3>
+                <button id="showToast" class="btn-primary" style="border:none; padding:0.75rem 1.5rem;">success</button>
+                <button id="showErrorToast" class="btn-outline" style="margin-left:0.5rem; padding:0.75rem 1.5rem;">error</button>
+            </div>
+            <div class="progress-section">
+                <h3>📊 progress</h3>
+                <div class="progress-label"><span>loading</span><span id="progressPercent">0%</span></div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+                <button id="startProgress" style="margin-top:1rem;">run</button>
+                <button id="resetProgress">reset</button>
+            </div>
+        </div>
+
+        <!-- SORTABLE TABLE (part3) -->
+        <div class="table-container">
+            <h3>📋 sortable table (click headers)</h3>
+            <table id="sortableTable">
+                <thead><tr><th data-sort="name">Framework <span>↕️</span></th><th data-sort="stars">⭐ stars <span>↕️</span></th><th data-sort="released">📅 released <span>↕️</span></th></tr></thead>
+                <tbody>
+                    <tr><td>React</td><td>215</td><td>2013</td></tr><tr><td>Vue</td><td>185</td><td>2014</td></tr><tr><td>Svelte</td><td>95</td><td>2016</td></tr><tr><td>Angular</td><td>168</td><td>2010</td></tr><tr><td>Alpine</td><td>42</td><td>2019</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- INTERACTIVE COUNTER (part1) -->
+        <div class="interactive-demo">
+            <div class="counter-box"><div class="counter-value" id="clickCounter">0</div><p>counter</p></div>
+            <div class="btn-group"><button class="btn-small" id="decrementBtn">−1</button><button class="btn-small" id="incrementBtn">+1</button><button class="btn-small" id="resetCnt">⟲ reset</button></div>
+        </div>
+
+        <!-- final message -->
+        <div style="background: #f1f5f9; border-radius: 2rem; padding: 2rem; border: 2px solid #2563eb; text-align:center;">
+            <p style="font-size:1.3rem;">✅ parts 1+2+3 merged · dark mode ready · all patterns interactive</p>
+        </div>
+    </main>
+
+    <!-- MODAL overlay (part2) -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header"><h3>modal dialog</h3><button class="modal-close" id="closeModalBtn">&times;</button></div>
+            <div class="modal-body"><p>Frequently needed modal with overlay, close on escape or outside click.</p></div>
+            <div class="modal-footer"><button class="btn-modal btn-secondary" id="cancelModal">cancel</button><button class="btn-modal btn-primary" id="acceptModal">ok</button></div>
+        </div>
+    </div>
+
+    <!-- TOAST container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <footer class="page-footer">
+        <p>© complete · all parts + dark mode · ready for preview on deepseek</p>
+    </footer>
+
+    <script>
+        $(document).ready(function(){
+
+            // ---------- DARK MODE ----------
+            $('#darkModeToggle').on('change', function() {
+                $('body').toggleClass('dark');
+            });
+
+            // ---------- MOBILE MENU ----------
+            $('#menuToggle').on('click', function() { $('#navLinks').toggleClass('show'); });
+            $(window).on('resize', function() { if ($(window).width() > 640) $('#navLinks').removeClass('show'); });
+
+            // ---------- COUNTER (part1) ----------
+            let count = 0;
+            function updateCounter(val) { count = val; $('#clickCounter').text(count); }
+            $('#incrementBtn').click(function() { updateCounter(count+1); });
+            $('#decrementBtn').click(function() { updateCounter(count-1); });
+            $('#resetCnt').click(function() { updateCounter(0); });
+
+            // ---------- TABS ----------
+            $('#tab1Btn').click(function(){ $(this).addClass('active'); $('#tab2Btn,#tab3Btn').removeClass('active'); $('#tab1').addClass('active'); $('#tab2,#tab3').removeClass('active'); });
+            $('#tab2Btn').click(function(){ $(this).addClass('active'); $('#tab1Btn,#tab3Btn').removeClass('active'); $('#tab2').addClass('active'); $('#tab1,#tab3').removeClass('active'); });
+            $('#tab3Btn').click(function(){ $(this).addClass('active'); $('#tab1Btn,#tab2Btn').removeClass('active'); $('#tab3').addClass('active'); $('#tab1,#tab2').removeClass('active'); });
+
+            // ---------- ACCORDION ----------
+            $('.accordion-header').click(function() {
+                if (!$(this).hasClass('active')) {
+                    $('.accordion-header').removeClass('active'); $('.accordion-content').slideUp(200);
+                    $(this).addClass('active'); $(this).next().slideDown(200);
+                } else { $(this).removeClass('active'); $(this).next().slideUp(200); }
+            });
+
+            // ---------- MODAL ----------
+            function closeModal() { $('#modalOverlay').fadeOut(150); }
+            $('#openModal').click(function() { $('#modalOverlay').fadeIn(200); });
+            $('#closeModalBtn, #cancelModal, #acceptModal').click(closeModal);
+            $('#modalOverlay').click(function(e) { if ($(e.target).is('#modalOverlay')) closeModal(); });
+            $(document).keydown(function(e) { if (e.key === 'Escape' && $('#modalOverlay').is(':visible')) closeModal(); });
+
+            // ---------- CAROUSEL ----------
+            let currentSlide = 0; const slides = $('.carousel-slide'); const dots = $('.dot');
+            function showSlide(index) {
+                if (index < 0) index = slides.length-1; if (index >= slides.length) index = 0;
+                slides.removeClass('active').eq(index).addClass('active');
+                dots.removeClass('active').eq(index).addClass('active'); currentSlide = index;
+            }
+            $('.carousel-prev').click(() => showSlide(currentSlide-1));
+            $('.carousel-next').click(() => showSlide(currentSlide+1));
+            dots.each((i,el) => $(el).click(() => showSlide(i)));
+            let interval = setInterval(() => showSlide(currentSlide+1), 4000);
+            $('.carousel-container').hover(() => clearInterval(interval), () => interval = setInterval(() => showSlide(currentSlide+1), 4000));
+
+            // ---------- TOAST ----------
+            function createToast(msg, type='success') {
+                let toast = $('<div class="toast"></div>').text(msg);
+                if (type==='error') toast.css('border-left-color','#dc2626');
+                let closeBtn = $('<button class="toast-close">×</button>').click(function() { $(this).parent().fadeOut(300,function(){$(this).remove();}); });
+                toast.append(closeBtn); $('#toastContainer').append(toast);
+                setTimeout(() => toast.fadeOut(300,function(){$(this).remove();}), 3500);
+            }
+            $('#showToast').click(() => createToast('✓ success','success'));
+            $('#showErrorToast').click(() => createToast('✗ error','error'));
+
+            // ---------- PROGRESS ----------
+            $('#startProgress').click(function(){
+                let w=0; let int = setInterval(function(){ if(w>=100) clearInterval(int); else { w+=2; $('#progressFill').css('width',w+'%'); $('#progressPercent').text(w+'%'); } },30);
+            });
+            $('#resetProgress').click(function(){ $('#progressFill').css('width','0%'); $('#progressPercent').text('0%'); });
+
+            // ---------- SORTABLE TABLE ----------
+            let sortDir = { name:'asc', stars:'asc', released:'asc' };
+            $('#sortableTable th').click(function(){
+                let col = $(this).data('sort'); let idx = $(this).index(); let tbody = $('#sortableTable tbody');
+                let rows = tbody.find('tr').toArray();
+                rows.sort(function(a,b){
+                    let aVal = $(a).find('td').eq(idx).text(); let bVal = $(b).find('td').eq(idx).text();
+                    if (col === 'stars' || col === 'released') { aVal = parseInt(aVal); bVal = parseInt(bVal); }
+                    else { aVal = aVal.toLowerCase(); bVal = bVal.toLowerCase(); }
+                    if (sortDir[col] === 'asc') return aVal > bVal ? 1 : -1;
+                    else return aVal < bVal ? 1 : -1;
+                });
+                sortDir[col] = sortDir[col] === 'asc' ? 'desc' : 'asc';
+                tbody.empty().append(rows);
+                $(this).find('span').text(sortDir[col] === 'asc' ? '⬆️' : '⬇️').siblings().text('↕️');
+            });
+        });
+    </script>
+</body>
+</html>
